@@ -506,3 +506,27 @@ timer.Start();
   （排查看不到的动画/内缩时非常有用）
 
 许可证：MIT。文中代码片段来自 MIT 许可的 OsuCursorWin 项目（Copyright (c) 2022 solstice23）。
+
+---
+
+## 13. 参考实现
+
+`template/` 目录是本规范的可编译骨架（命名空间与程序集名均为 `UiTemplate`），
+在目录里执行 `dotnet build -c Release` 可以 0 error 通过。它是第 10 节十步配方的
+落地版本，每个文件对应其中的一步。
+
+| 文件 | 作用 |
+| --- | --- |
+| `template/UiTemplate.csproj` | 非打包 + 自包含的 WinUI 3 工程（net8.0-windows10.0.19041.0）；自包含意味着必须从 `bin\x64\Release\net8.0-windows10.0.19041.0\win-x64\` 启动 |
+| `template/app.manifest` | PerMonitorV2 DPI 感知；`asInvoker`，不请求管理员 |
+| `template/App.xaml` / `App.xaml.cs` | `XamlControlsResources`；`OnLaunched` 里依次创建设置 → 托盘 → 窗口，全程 try/catch |
+| `template/AppLog.cs` | 追加时间戳到 `%TEMP%\UiTemplate.log`，失败不抛 |
+| `template/AppSettings.cs` | 设置持久化（`Load`/`Save`/`Clone`/`CopyFrom`），落在 `%LOCALAPPDATA%\UiTemplate\settings.json` |
+| `template/AppearanceManager.cs` | 主题、窗口不透明度（`WS_EX_LAYERED`）、云母/亚克力、背景图 + GDI+ 高斯模糊 |
+| `template/TrayIcon.cs` | `Shell_NotifyIcon` 托盘图标：显示窗口 / 切换示例开关 / 退出 |
+| `template/ShellWindow.cs` | 窗口本体：32px 标题栏、`NavigationView` 三页（General / Appearance / Advanced）、草稿 + 应用/取消模型、数值行助手 |
+| `template/README.md` | 构建与运行路径规则、关窗即隐藏、以及改名改造步骤 |
+
+把 `template/` 复制一份改名即可开新工具：改 `RootNamespace` / `AssemblyName`、
+按需调整 `AppxMSBuildToolsPath`，然后替换 `ShellWindow.cs` 顶部的 `Strings` 文案块
+与三个 `Build*Page()`。

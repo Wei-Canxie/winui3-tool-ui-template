@@ -13,7 +13,8 @@ scratch without re-discovering the same pitfalls.**
   ([中文](docs/UI-DESIGN.md))
 - 🧪 Every conclusion is measured (raw numbers and reasoning included), not "this is probably how it works"
 
-> This repository contains documentation only — no application source. The spec is derived from the
+> This repository ships **the documentation plus a ready-to-build template project** (`template/`, verified
+> to build with 0 warnings / 0 errors and to start successfully). The spec and template are derived from the
 > MIT-licensed [OsuCursorWin](https://github.com/xyc-233/OsuCursirWin) project.
 
 ---
@@ -109,10 +110,46 @@ scratch without re-discovering the same pitfalls.**
 
 ---
 
+## The template project: `template/`
+
+Besides the documentation, the repository contains a **compilable, runnable WinUI 3 skeleton** that turns this
+design into code. All business logic of the original tool (cursor engine, sounds, services) has been stripped;
+only the generic shell remains:
+
+| File | Purpose |
+| --- | --- |
+| `UiTemplate.csproj` | Unpackaged + self-contained WASDK project config (including the `AppxMSBuildToolsPath` you must point at your own Visual Studio) |
+| `app.manifest` | PerMonitorV2 DPI; deliberately `asInvoker` (no forced UAC prompt) |
+| `App.xaml` / `App.xaml.cs` | Startup order: tray icon → main window → activate, all wrapped in try/catch with logging |
+| `ShellWindow.cs` | The shell: custom title bar with theme-synced caption buttons, NavigationView left-compact pane, sidebar rounding and collapse animation, the draft + floating Apply/Cancel card, the numeric row control |
+| `AppearanceManager.cs` | Theme / window opacity (`WS_EX_LAYERED`) / Mica / Acrylic / background image with gaussian blur |
+| `AppSettings.cs` | Settings model: `Load` / `Save` / `Clone` / `CopyFrom`, persisted to `%LOCALAPPDATA%\UiTemplate\settings.json` |
+| `TrayIcon.cs` | Win32 tray: show window / toggle the demo feature / exit |
+| `AppLog.cs` | Logs to `%TEMP%\UiTemplate.log` |
+
+Verification status: after deleting `bin/obj`, `dotnet build -c Release` reports **0 warnings / 0 errors**, and the
+output `bin\x64\Release\net8.0-windows10.0.19041.0\win-x64\UiTemplate.exe` was launched successfully (tray
+registration, window creation and activation all logged).
+
+```bash
+cd template
+dotnet build -c Release
+# launch from the output directory; never copy the exe elsewhere on its own
+bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/UiTemplate.exe
+# kill the old instance before rebuilding, or the locked exe fails the build
+taskkill /F /IM UiTemplate.exe
+```
+
+Adapting it to your own tool: change `AssemblyName` / `RootNamespace` and the window title → replace the three
+sample pages in `ShellWindow.cs` (General / Appearance / Advanced) → add or remove fields in `AppSettings` → only
+switch `app.manifest` to `requireAdministrator` if the tool genuinely needs elevation.
+
 ## Using it as a template
 
-1. Read Section 2 of [docs/UI-DESIGN.en.md](docs/UI-DESIGN.en.md) and create the project from the
-   `.csproj` / `app.manifest` shown there.
+0. Want a code starting point straight away? Copy the whole `template/` directory and rename it (see the
+   section above).
+1. Prefer building it yourself? Read Section 2 of [docs/UI-DESIGN.en.md](docs/UI-DESIGN.en.md) and create
+   the project from the `.csproj` / `app.manifest` shown there.
 2. Follow the ten-step recipe in Section 10: shell → navigation → sidebar → settings model → controls
    → appearance → self-test.
 3. Section 11 is a symptom-to-cause table — check it first when something behaves oddly.

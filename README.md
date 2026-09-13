@@ -10,8 +10,8 @@
 - 📐 设计规范与代码配方：[docs/UI-DESIGN.md](docs/UI-DESIGN.md)（[English](docs/UI-DESIGN.en.md)）
 - 🧪 所有结论都是实测得来的（附实测数据与判断依据），不是"看起来应该这样"
 
-> 本仓库只包含文档，不含应用程序源码。规范来源于 MIT 许可的
-> [OsuCursorWin](https://github.com/xyc-233/OsuCursirWin) 项目。
+> 本仓库包含**设计文档 + 一个可直接编译运行的模板工程**（`template/`，已实测 0 warning / 0 error 构建通过并能正常启动）。
+> 规范与模板来源于 MIT 许可的 [OsuCursorWin](https://github.com/xyc-233/OsuCursirWin) 项目。
 
 ---
 
@@ -89,9 +89,43 @@
 
 ---
 
+## 模板工程 `template/`
+
+除了文档，仓库里还有一个**可直接编译运行的 WinUI 3 骨架工程**，把这套设计落成了代码。
+它已经剥离原项目的业务逻辑（光标引擎、音效、服务），只保留通用外壳：
+
+| 文件 | 作用 |
+| --- | --- |
+| `UiTemplate.csproj` | 非打包 + 自包含 WASDK 的工程配置（含必须按本机修改的 `AppxMSBuildToolsPath`） |
+| `app.manifest` | PerMonitorV2 DPI；刻意用 asInvoker（不强制 UAC，需要时再换） |
+| `App.xaml` / `App.xaml.cs` | 启动顺序：托盘图标 → 主窗口 → 激活，全程 try/catch 记日志 |
+| `ShellWindow.cs` | 外壳：自绘标题栏 + 系统按钮配色、NavigationView 左收起、侧边栏圆角与收起动画、草稿 + 浮动"应用 / 取消更改"卡片、数值三件套 |
+| `AppearanceManager.cs` | 主题 / 窗口不透明度（`WS_EX_LAYERED`）/ 云母 / 亚克力 / 背景图 + 高斯模糊 |
+| `AppSettings.cs` | 设置模型：`Load` / `Save` / `Clone` / `CopyFrom`，落盘到 `%LOCALAPPDATA%\UiTemplate\settings.json` |
+| `TrayIcon.cs` | Win32 托盘：显示窗口 / 切换示例功能 / 退出 |
+| `AppLog.cs` | 日志写 `%TEMP%\UiTemplate.log` |
+
+验证状态：清空 `bin/obj` 后 `dotnet build -c Release` 为 **0 warning / 0 error**，
+产物 `bin\x64\Release\net8.0-windows10.0.19041.0\win-x64\UiTemplate.exe` 已实测启动成功
+（托盘注册、窗口创建、激活三步日志齐全）。
+
+```bash
+cd template
+dotnet build -c Release
+# 必须从输出目录启动，不要把 exe 单独复制到别处
+bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/UiTemplate.exe
+# 换新构建前先杀掉旧实例，否则 exe 被占用会让构建失败
+taskkill /F /IM UiTemplate.exe
+```
+
+改造成自己的工具：改 `AssemblyName` / `RootNamespace` 和窗口标题 → 替换 `ShellWindow.cs` 里的三个示例页
+（General / Appearance / Advanced）→ 在 `AppSettings` 里增删字段 → 只有真的需要时才把 `app.manifest`
+改成 `requireAdministrator`。
+
 ## 怎么把它当成模板用
 
-1. 读 [docs/UI-DESIGN.md](docs/UI-DESIGN.md) 第 2 节，按里面的 `.csproj` / `app.manifest` 建工程。
+0. 想直接要代码起点：复制 `template/` 整个目录，改名即可（见上一节）。
+1. 想自己搭：读 [docs/UI-DESIGN.md](docs/UI-DESIGN.md) 第 2 节，按里面的 `.csproj` / `app.manifest` 建工程。
 2. 照第 10 节的十步配方推进：外壳 → 导航 → 侧边栏 → 设置模型 → 控件 → 外观 → 自测。
 3. 第 11 节是一张现象到原因的对照表，遇到怪问题先查它。
 4. 需要更底层的真相时，直接读 NuGet 包里的 WinUI 模板：

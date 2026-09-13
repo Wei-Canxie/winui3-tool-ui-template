@@ -536,3 +536,27 @@ Delete the temporary instrumentation afterwards (`grep` for the marker string an
 
 License: MIT. Code snippets come from the MIT-licensed OsuCursorWin project
 (Copyright (c) 2022 solstice23).
+
+---
+
+## 13. Reference implementation
+
+`template/` is a compilable skeleton of this spec (namespace and assembly name
+`UiTemplate`): `dotnet build -c Release` inside it reports 0 errors. It is the
+step-by-step recipe of Section 10 in code, one file per step.
+
+| File | Contents |
+| --- | --- |
+| `template/UiTemplate.csproj` | Unpackaged, self-contained WinUI 3 project (net8.0-windows10.0.19041.0); self-contained means it must be launched from `bin\x64\Release\net8.0-windows10.0.19041.0\win-x64\` |
+| `template/app.manifest` | PerMonitorV2 DPI awareness; `asInvoker`, so no UAC prompt |
+| `template/App.xaml` / `App.xaml.cs` | `XamlControlsResources`; `OnLaunched` creates settings → tray → window, all in try/catch |
+| `template/AppLog.cs` | Timestamped lines to `%TEMP%\UiTemplate.log`; never throws |
+| `template/AppSettings.cs` | Settings persistence (`Load`/`Save`/`Clone`/`CopyFrom`) in `%LOCALAPPDATA%\UiTemplate\settings.json` |
+| `template/AppearanceManager.cs` | Theme, window opacity (`WS_EX_LAYERED`), Mica/Acrylic, background image with its GDI+ gaussian blur |
+| `template/TrayIcon.cs` | Tray icon over `Shell_NotifyIcon`: Show window / Toggle sample feature / Exit |
+| `template/ShellWindow.cs` | The window: 32px title bar, `NavigationView` with three pages (General / Appearance / Advanced), the draft + Apply/Cancel model and the numeric row helper |
+| `template/README.md` | Build and launch-path rules, close-hides behaviour, and the rename steps |
+
+Copy the directory and rename it to start a new tool: change `RootNamespace` /
+`AssemblyName`, adjust `AppxMSBuildToolsPath` if needed, then replace the `Strings`
+block at the top of `ShellWindow.cs` and the three `Build*Page()` methods.
