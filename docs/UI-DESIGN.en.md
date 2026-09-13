@@ -372,7 +372,7 @@ private Grid BuildSliderWithTextBox(string label, double value, double sliderMin
 
 Conventions:
 
-- The minus sign is U+2212 `−` (en dash), not a hyphen: it sits visually centred; `+` is the plain plus.
+- The minus sign is U+2212 `−` (the MINUS SIGN, not a hyphen): it sits visually centred; `+` is the plain plus.
 - Buttons are exactly 32×32, font size 16, `Padding = 0`, content is a centred `TextBlock`.
 - The text box may exceed the slider range (`textMin/textMax`); the slider is only for fast dragging.
 - A header label shows "value + unit" and updates live (e.g. `Background image opacity: 80%`).

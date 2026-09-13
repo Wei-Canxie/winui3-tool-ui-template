@@ -349,7 +349,7 @@ private Grid BuildSliderWithTextBox(string label, double value, double sliderMin
 
 约定：
 
-- 减号用 U+2212 `−`（en dash），不是连字符，视觉上更居中；`+` 用普通加号。
+- 减号用 U+2212 `−`（真正的减号 MINUS SIGN，不是连字符），视觉上更居中；`+` 用普通加号。
 - 按钮固定 32×32、字号 16、`Padding = 0`，内容用 `TextBlock` 居中。
 - 数字框允许超出滑条范围（`textMin/textMax`），滑条只负责快速拖动。
 - 标签文字用"值 + 单位"形式实时刷新（例如 `背景图片不透明度: 80%`）。

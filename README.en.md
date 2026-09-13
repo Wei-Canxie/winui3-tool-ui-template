@@ -9,6 +9,7 @@ Mica / Acrylic / window opacity) — all taken from a tray-resident tool that ac
 Its purpose is concrete: **let another agent (or developer) build a UI in the same style from
 scratch without re-discovering the same pitfalls.**
 
+- 📘 **Leader handbook (start here)**: [README_leader.en.md](README_leader.en.md) ([中文](README_leader.md)) — design rationale, features, usage, troubleshooting and an agent acceptance checklist
 - 📐 Design spec and code recipes: [docs/UI-DESIGN.en.md](docs/UI-DESIGN.en.md)
   ([中文](docs/UI-DESIGN.md))
 - 🧪 Every conclusion is measured (raw numbers and reasoning included), not "this is probably how it works"

@@ -7,6 +7,7 @@
 
 它的用途很具体：**让另一个 Agent（或开发者）从零搭起同风格的 UI 时，不必重新踩一遍坑。**
 
+- 📘 **领读版手册（推荐从这里开始）**：[README_leader.md](README_leader.md)（[English](README_leader.en.md)）—— 设计思路 + 特性 + 用法 + 排查手册 + 给 Agent 的验收清单
 - 📐 设计规范与代码配方：[docs/UI-DESIGN.md](docs/UI-DESIGN.md)（[English](docs/UI-DESIGN.en.md)）
 - 🧪 所有结论都是实测得来的（附实测数据与判断依据），不是"看起来应该这样"
 
