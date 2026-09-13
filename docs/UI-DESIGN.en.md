@@ -523,6 +523,7 @@ Delete the temporary instrumentation afterwards (`grep` for the marker string an
 | Thin gaps above/below the sidebar | the template pane has a 3px margin plus a 1px host border (Section 4.2) |
 | The collapse "has no animation" | the template's close is 120ms and shrinks the pane at the same time (Section 4.3) |
 | Dragging a slider breaks | never apply/rebuild on every tick; use the draft model |
+| A long file name or long text pushes the following buttons off the window where they cannot be clicked | a horizontal StackPanel measures children at their full desired width, so `TextTrimming` never kicks in | use a `Grid`: text in a star column, buttons in an auto column, and put the full content in a `ToolTip` |
 | Rounding a panel makes it disappear | never let a Composition clip have a zero-sized box |
 
 ---

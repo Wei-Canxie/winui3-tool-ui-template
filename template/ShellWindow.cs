@@ -951,11 +951,18 @@ internal sealed class ShellWindow : Window
 
         var pathLabel = new TextBlock
         {
-            Text = DescribeImage(_settings.BackgroundImagePath),
             VerticalAlignment = VerticalAlignment.Center,
-            MinWidth = 160,
+            TextWrapping = TextWrapping.NoWrap,
             TextTrimming = TextTrimming.CharacterEllipsis,
         };
+
+        void SetImageLabel(string? path)
+        {
+            pathLabel.Text = DescribeImage(path);
+            ToolTipService.SetToolTip(pathLabel, string.IsNullOrEmpty(path) ? DescribeImage("") : path);
+        }
+
+        SetImageLabel(_settings.BackgroundImagePath);
 
         var chooseButton = new Button { Content = Strings.Appearance.ChooseImage };
         RoutedEventHandler chooseHandler = (_, _) =>
@@ -964,7 +971,7 @@ internal sealed class ShellWindow : Window
             if (!string.IsNullOrEmpty(path))
             {
                 _settings.BackgroundImagePath = path;
-                pathLabel.Text = DescribeImage(path);
+                SetImageLabel(path);
                 MarkDirty();
             }
         };
@@ -975,16 +982,28 @@ internal sealed class ShellWindow : Window
         RoutedEventHandler clearHandler = (_, _) =>
         {
             _settings.BackgroundImagePath = "";
-            pathLabel.Text = DescribeImage("");
+            SetImageLabel("");
             MarkDirty();
         };
         clearButton.Click += clearHandler;
         page.RegisterUnsubscribe(() => clearButton.Click -= clearHandler);
 
-        var imageRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        // A Grid, not a horizontal StackPanel: a StackPanel measures its children at
+        // their full desired width, so TextTrimming never kicks in and a long file
+        // name pushed both buttons off the page, where they could not be clicked.
+        // The label now lives in a star column and the buttons in an auto column, so
+        // they always stay in view; the tooltip carries the full path.
+        var imageButtons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        imageButtons.Children.Add(chooseButton);
+        imageButtons.Children.Add(clearButton);
+
+        var imageRow = new Grid { ColumnSpacing = 8 };
+        imageRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        imageRow.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        Grid.SetColumn(pathLabel, 0);
+        Grid.SetColumn(imageButtons, 1);
         imageRow.Children.Add(pathLabel);
-        imageRow.Children.Add(chooseButton);
-        imageRow.Children.Add(clearButton);
+        imageRow.Children.Add(imageButtons);
         page.Children.Add(imageRow);
 
         var imageOpacityStatus = new TextBlock
@@ -1193,7 +1212,7 @@ internal sealed class ShellWindow : Window
         }
     }
 
-    private static string DescribeImage(string path) =>
+    private static string DescribeImage(string? path) =>
         string.IsNullOrEmpty(path) ? Strings.Appearance.NoImage : Path.GetFileName(path);
 
     private static bool IsBackdropSupported()

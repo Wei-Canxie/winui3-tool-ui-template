@@ -827,6 +827,7 @@ var peer = new ButtonAutomationPeer(toggleButton);
 | 切主题后部分控件颜色不变 | 已生成的画刷不会自动跟 | 重建当前页 |
 | 侧边栏圆角削掉了内容 | Composition 裁剪作用于整个 pane | 只裁 pane 背景元素，或给内容留内边距 |
 | 数值框输入 `80` 变成 8000% | 用了 `P0`/`0%` 格式 → 解析回 80 → 8000% | 用 `0.##`，百分比在写值时分母处理 |
+| 长文件名/长文本把后面的按钮顶出窗口、点不到 | 横向 StackPanel 按子元素的完整期望宽度测量，`TextTrimming` 因此不生效 | 换成 `Grid`：文本放星号列、按钮放 auto 列，完整内容放进 `ToolTip` |
 | 管理员版无法从普通 shell 启动 | manifest 要求提权 | 用提权 shell 启动；或改回 asInvoker |
 | 打包体积巨大 | 自包含运行时 | 可以接受（149MB）；要小体积改用非自包含 + 引导安装 |
 | `XamlCompiler warning WMC1509` | NuGet 缓存 WinUI 包版本与 WASDK 声明不一致 | 无害，忽略 |

@@ -827,6 +827,7 @@ var peer = new ButtonAutomationPeer(toggleButton);
 | some controls keep their old colors after a theme switch | brushes that already exist do not follow automatically | rebuild the current page |
 | the sidebar rounding clips the content | the Composition clip applies to the whole pane | clip only the pane's background element, or give the content padding |
 | typing `80` into the value box becomes 8000% | a `P0`/`0%` format was used → parsed back as 80 → 8000% | use `0.##` and handle the denominator when writing percentage values |
+| A long file name or long text pushes the following buttons off the window where they cannot be clicked | a horizontal StackPanel measures children at their full desired width, so `TextTrimming` never kicks in | use a `Grid`: text in a star column, buttons in an auto column, and put the full content in a `ToolTip` |
 | the admin build cannot be started from an ordinary shell | the manifest demands elevation | start it from an elevated shell, or switch back to `asInvoker` |
 | the output is huge | the self-contained runtime | acceptable (149MB); for a small footprint switch to non-self-contained plus a bootstrapper install |
 | `XamlCompiler warning WMC1509` | the WinUI package version in the NuGet cache disagrees with the one WASDK declares | harmless, ignore it |
